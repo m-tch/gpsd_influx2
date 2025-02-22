@@ -21,10 +21,10 @@ EXPOSE 2947
 
 # Setup environment variables if needed
 ENV GPSD_OPTIONS="-n -N -b /dev/your-gps-device"
-ENV INFLUXDB_URL="http://influxdb:8086"
-ENV INFLUXDB_ORG = "my-site"
-ENV INFLUXDB_TOKEN = "my-token"
-ENV INFLUXDB_BUCKET = "gpsd"
+ENV INFLUXDB_V2_URL="http://influxdb:8086"
+ENV INFLUXDB_V2_ORG = "my-site"
+ENV INFLUXDB_V2_TOKEN = "my-token"
+ENV INFLUXDB_V2_BUCKET = "gpsd"
 
 # Add a simple healthcheck
 HEALTHCHECK --interval=30s --timeout=10s \
