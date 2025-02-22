@@ -7,7 +7,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Clone the gpsd_influx2 repository
-RUN git clone https://github.com/longview/gpsd_influx2.git /app/gpsd_influx2
+RUN git clone https://github.com/m-tch/gpsd_influx2.git /app/gpsd_influx2
 
 # Set the working directory
 WORKDIR /app/gpsd_influx2
