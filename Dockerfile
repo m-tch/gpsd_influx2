@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.9-alpine
+FROM python:3.9-slim
 
 # Install gpsd and git
 RUN apt-get update && \
