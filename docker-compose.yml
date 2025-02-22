@@ -12,5 +12,5 @@ services:
       - INFLUXDB_V2_TOKEN=token
       - INFLUXDB_V2_ORG=org
       - INFLUXDB_V2_BUCKET=bucket
-      - GPSD_OPTIONS="-n -N -D 2 "/"
+      - GPSD_OPTIONS="-b -n -F /var/run/gpsd.sock tcp://<IP>:2947"
     restart: unless-stopped
