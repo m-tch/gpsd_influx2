@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  gpsd_influxV2:
+    image: "gpsd_influx2:latest"
+    container_name: monitor1_gpsd
+    envirnoment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Australia/Perth
+      - INFLUXDB_V2_URL=http://influxdb:8086
+      - INFLUXDB_V2_TOKEN=token
+      - INFLUXDB_V2_ORG=org
+      - INFLUXDB_V2_BUCKET=bucket
+      - GPSD_OPTIONS="-n -N -D 2 "/"
+    restart: unless-stopped

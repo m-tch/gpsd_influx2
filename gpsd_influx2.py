@@ -16,16 +16,16 @@ from datetime import datetime
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-bucket = os.getenv('GPSD_BUCKET', 'gpsd')
+bucket = os.getenv('INFLUX_V2_BUCKET', 'gpsd')
 
 # Number of seconds between updates
 update_interval = os.getenv('UPDATE_INTERVAL', '5')
 
 # --------------------------------------------------------------------------------
 # Read configuration from environment variables, with defaults
-influx_url = os.getenv('INFLUXDB_URL', 'http://localhost:8086')
-influx_org = os.getenv('INFLUXDB_ORG', 'my-org')
-influx_token = os.getenv('INFLUXDB_TOKEN', 'my-token')
+influx_url = os.getenv('INFLUXDB_V2_URL', 'http://localhost:8086')
+influx_org = os.getenv('INFLUXDB_V2_ORG', 'my-org')
+influx_token = os.getenv('INFLUXDB_V2_TOKEN', 'my-token')
 
 # --------------------------------------------------------------------------------
 # Do not change anything below this line
