@@ -16,10 +16,16 @@ from datetime import datetime
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-bucket = "gpsd"
+bucket = os.getenv('GPSD_BUCKET', 'gpsd')
 
 # Number of seconds between updates
-update_interval = 10
+update_interval = os.getenv('UPDATE_INTERVAL', '5')
+
+# --------------------------------------------------------------------------------
+# Read configuration from environment variables, with defaults
+influx_url = os.getenv('INFLUXDB_URL', 'http://localhost:8086')
+influx_org = os.getenv('INFLUXDB_ORG', 'my-org')
+influx_token = os.getenv('INFLUXDB_TOKEN', 'my-token')
 
 # --------------------------------------------------------------------------------
 # Do not change anything below this line
@@ -57,7 +63,14 @@ class GpsPoller(threading.Thread):
 # --------------------------------------------------------------------------------
 # GPS Loop
 if __name__ == '__main__':
-    with InfluxDBClient.from_config_file("config.ini") as client:
+    client = InfluxDBClient(
+        url=influx_url,
+        token=influx_token,
+        org=influx_org,
+        timeout=int(6000),
+        verify_ssl=False
+    )
+    with client:
         # Create the thread
         gpsp = GpsPoller()
         try:
