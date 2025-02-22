@@ -7,6 +7,7 @@ import socket
 import sys
 import threading
 import time
+import math
 
 from pprint import pprint
 
@@ -26,6 +27,11 @@ update_interval = os.getenv('UPDATE_INTERVAL', '5')
 influx_url = os.getenv('INFLUXDB_V2_URL', 'http://localhost:8086')
 influx_org = os.getenv('INFLUXDB_V2_ORG', 'my-org')
 influx_token = os.getenv('INFLUXDB_V2_TOKEN', 'my-token')
+
+# Check for missing environment variables
+if not influx_url or not influx_org or not influx_token:
+    print("Error: Missing one or more required environment variables.")
+    sys.exit(1)
 
 # --------------------------------------------------------------------------------
 # Do not change anything below this line
@@ -63,13 +69,18 @@ class GpsPoller(threading.Thread):
 # --------------------------------------------------------------------------------
 # GPS Loop
 if __name__ == '__main__':
-    client = InfluxDBClient(
-        url=influx_url,
-        token=influx_token,
-        org=influx_org,
-        timeout=int(6000),
-        verify_ssl=False
-    )
+    try:
+        client = InfluxDBClient(
+            url=influx_url,
+            token=influx_token,
+            org=influx_org,
+            timeout=int(6000),
+            verify_ssl=False
+        )
+    except Exception as e:
+        print(f"Error: Unable to connect to InfluxDB. {e}")
+        sys.exit(1)
+
     with client:
         # Create the thread
         gpsp = GpsPoller()
@@ -82,22 +93,26 @@ if __name__ == '__main__':
 
             # Start the loop
             while True:
-                gpsd_alt   = float(gpsd.fix.altitude)
-                gpsd_climb = float(gpsd.fix.climb)
-                gpsd_epc   = float(gpsd.fix.epc)
-                gpsd_eps   = float(gpsd.fix.eps)
-                gpsd_ept   = float(gpsd.fix.ept)
-                gpsd_epv   = float(gpsd.fix.epv)
-                gpsd_epx   = float(gpsd.fix.epx)
-                gpsd_epy   = float(gpsd.fix.epy)
-                gpsd_lat   = float(gpsd.fix.latitude)
-                gpsd_lon   = float(gpsd.fix.longitude)
-                gpsd_mode  = float(gpsd.fix.mode)
-                gpsd_status  = int(gpsd.fix.status)
-                gpsd_speed = float(gpsd.fix.speed)
-                gpsd_track = float(gpsd.fix.track)
-                gpsd_sats_vis = int(len(gpsd.satellites))
-                gpsd_sats_used = int(gpsd.satellites_used)
+                try:
+                    gpsd_alt   = float(gpsd.fix.altitude)
+                    gpsd_climb = float(gpsd.fix.climb)
+                    gpsd_epc   = float(gpsd.fix.epc)
+                    gpsd_eps   = float(gpsd.fix.eps)
+                    gpsd_ept   = float(gpsd.fix.ept)
+                    gpsd_epv   = float(gpsd.fix.epv)
+                    gpsd_epx   = float(gpsd.fix.epx)
+                    gpsd_epy   = float(gpsd.fix.epy)
+                    gpsd_lat   = float(gpsd.fix.latitude)
+                    gpsd_lon   = float(gpsd.fix.longitude)
+                    gpsd_mode  = float(gpsd.fix.mode)
+                    gpsd_status  = int(gpsd.fix.status)
+                    gpsd_speed = float(gpsd.fix.speed)
+                    gpsd_track = float(gpsd.fix.track)
+                    gpsd_sats_vis = int(len(gpsd.satellites))
+                    gpsd_sats_used = int(gpsd.satellites_used)
+                except Exception as e:
+                    print(f"Error: Unable to retrieve GPS data. {e}")
+                    continue
 
                 # combined status field, 0-4 = ZERO, NO_FIX, 2D, 3D, DGPS
                 gpsd_status_combined = gpsd_mode
@@ -330,17 +345,19 @@ if __name__ == '__main__':
                         points.append(p)
 
                 if output == True:
-                    write_api.write(bucket=bucket, record=points)
+                    try:
+                        write_api.write(bucket=bucket, record=points)
+                    except Exception as e:
+                        print(f"Error: Unable to write data to InfluxDB. {e}")
 
-                
                 time.sleep(update_interval)
         except (KeyboardInterrupt, SystemExit): #when you press ctrl+c
             print ("\nKilling Thread...")
             gpsp.running = False
             gpsp.join() # wait for the thread to finish what it's doing
             print ("Done.\nExiting.")
-        except:
-            print ("Something went wrong, probably gpsd or influx died. Terminating.")
+        except Exception as e:
+            print(f"Something went wrong: {e}")
             gpsp.running = False
             gpsp.join() # wait for the thread to finish what it's doing
             sys.exit(1) # exit with error code
