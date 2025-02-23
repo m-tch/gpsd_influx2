@@ -20,7 +20,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 bucket = os.getenv('INFLUX_V2_BUCKET', 'gpsd')
 
 # Number of seconds between updates
-update_interval = os.getenv('UPDATE_INTERVAL', '5')
+update_interval = int(os.getenv('UPDATE_INTERVAL', '5'))
 
 # --------------------------------------------------------------------------------
 # Read configuration from environment variables, with defaults
