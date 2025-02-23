@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Ensure the entrypoint script has executable permissions
-RUN chmod +x entrypoint.sh
+RUN chmod +x /app/gpsd_influx2/entrypoint.sh
 
 # Expose GPSD port
 EXPOSE 2947
@@ -32,4 +32,4 @@ HEALTHCHECK --interval=30s --timeout=10s \
   CMD pgrep gpsd || exit 1
 
 # CMD using the script
-CMD ["./entrypoint.sh"]
+CMD ["/app/gpsd_influx2/entrypoint.sh"]

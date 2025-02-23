@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Start GPSD using the environment variable options
+# Start gpsd
 gpsd $GPSD_OPTIONS
 
-# Run the Python script
-python gpsd_influx2.py -s
+# Run the main application
+python3 gpsd_influx2.py
