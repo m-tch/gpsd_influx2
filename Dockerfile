@@ -14,6 +14,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code
 COPY . .
 
+# Ensure the entrypoint script has executable permissions
+RUN chmod +x entrypoint.sh
+
 # Expose GPSD port
 EXPOSE 2947
 
